@@ -1,150 +1,141 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const generateFaviconBtn = document.getElementById('generateFaviconBtn');
-    const saveToLocalBtn = document.getElementById('saveToLocalBtn');
-    const faviconTextInput = document.getElementById('faviconText');
+document.addEventListener("DOMContentLoaded", function() {
+    const generateBtn = document.getElementById('generateFaviconBtn');
+    const faviconText = document.getElementById('faviconText');
+    const textColor = document.getElementById('textColor');
+    const bgColor = document.getElementById('bgColor');
+    const fontSelect = document.getElementById('fontSelect');
+    const boldText = document.getElementById('boldText');
+    const italicText = document.getElementById('italicText');
     const customSizeSelect = document.getElementById('customSizeSelect');
     const customSizeInputSection = document.getElementById('customSizeInputSection');
     const customSizeInput = document.getElementById('customSize');
-    const iconShapeSelect = document.getElementById('iconShapeSelect');
-    const textColorInput = document.getElementById('textColor');
-    const bgColorInput = document.getElementById('bgColor');
-    const fontSelect = document.getElementById('fontSelect');
-    const boldTextCheckbox = document.getElementById('boldText');
-    const italicTextCheckbox = document.getElementById('italicText');
-    const textShadowCheckbox = document.getElementById('textShadow');
-    const backgroundModeSelect = document.getElementById('backgroundMode');
-    const iconPreviewsContainer = document.getElementById('iconPreviews');
+    const textShadow = document.getElementById('textShadow');
+    const iconPreviews = document.getElementById('iconPreviews');
+    const htmlCodeArea = document.getElementById('htmlCode');
     const downloadLinksContainer = document.getElementById('downloadLinksContainer');
     const downloadZipLink = document.getElementById('downloadZipLink');
-    const htmlCodeTextarea = document.getElementById('htmlCode');
+    const iconShapeSelect = document.getElementById('iconShapeSelect');
+    const backgroundMode = document.getElementById('backgroundMode');
+    const sizeOptions = ['16x16', '32x32', '96x96', '180x180', '512x512', '300x300'];
 
-    // Enable/Disable buttons based on input
-    function updateButtonsState() {
-        const isTextValid = faviconTextInput.value.trim() !== '';
-        const isSizeValid = customSizeSelect.value !== 'custom' || customSizeInput.value.trim() !== '';
-        generateFaviconBtn.disabled = !isTextValid || !isSizeValid;
-        saveToLocalBtn.disabled = !isTextValid || !isSizeValid;
-    }
-
-    // Show/hide custom size input
+    // Display custom size input when selected
     customSizeSelect.addEventListener('change', () => {
         if (customSizeSelect.value === 'custom') {
             customSizeInputSection.classList.remove('hidden');
         } else {
             customSizeInputSection.classList.add('hidden');
         }
-        updateButtonsState();
     });
 
-    // Update buttons state when input changes
-    faviconTextInput.addEventListener('input', updateButtonsState);
-    customSizeInput.addEventListener('input', updateButtonsState);
+    // Enable button when all necessary inputs are filled
+    function enableGenerateButton() {
+        if (faviconText.value && (customSizeSelect.value !== 'custom' || customSizeInput.value)) {
+            generateBtn.disabled = false;
+        } else {
+            generateBtn.disabled = true;
+        }
+    }
 
-    // Function to draw a favicon on canvas
-    function generateFaviconCanvas(text, bgColor, textColor, font, bold, italic, size, shape, textShadow) {
+    // Update generated HTML code
+    function updateHTMLCode(faviconData) {
+        const htmlCode = `
+<!-- Favicon Links -->
+<link rel="icon" type="image/png" sizes="16x16" href="${faviconData['16x16']}">
+<link rel="icon" type="image/png" sizes="32x32" href="${faviconData['32x32']}">
+<link rel="icon" type="image/png" sizes="96x96" href="${faviconData['96x96']}">
+<link rel="icon" type="image/png" sizes="180x180" href="${faviconData['180x180']}">
+<link rel="icon" type="image/png" sizes="512x512" href="${faviconData['512x512']}">
+`;
+        htmlCodeArea.value = htmlCode;
+    }
+
+    // Generate favicon based on user input
+    function generateFavicon() {
+        const text = faviconText.value;
+        const textColorValue = textColor.value;
+        const bgColorValue = bgColor.value;
+        const font = fontSelect.value;
+        const isBold = boldText.checked;
+        const isItalic = italicText.checked;
+        const shadow = textShadow.checked;
+        const iconShape = iconShapeSelect.value;
+        const size = customSizeSelect.value === 'custom' ? customSizeInput.value : customSizeSelect.value;
+
+        // Create canvas for rendering favicon
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const [width, height] = size.split('x').map(Number);
 
-        // Set canvas size based on selected size
-        canvas.width = width;
-        canvas.height = height;
+        const sizes = ['16x16', '32x32', '96x96', '180x180', '512x512', '300x300'];
+        const faviconData = {};
 
-        // Background color
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        sizes.forEach(size => {
+            const [width, height] = size.split('x').map(Number);
+            canvas.width = width;
+            canvas.height = height;
 
-        // Shape: Circle or Square
-        if (shape === 'circle') {
-            ctx.beginPath();
-            ctx.arc(width / 2, height / 2, width / 2, 0, Math.PI * 2);
-            ctx.clip(); // Apply circular clip path
-        }
+            // Set background color based on selected mode
+            ctx.fillStyle = bgColorValue;
+            ctx.fillRect(0, 0, width, height);
 
-        // Text styling
-        ctx.fillStyle = textColor;
-        ctx.font = `${bold ? 'bold' : ''} ${italic ? 'italic' : ''} 48px ${font}`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+            // Set text style
+            ctx.fillStyle = textColorValue;
+            const baseFontSize = Math.min(width, height) * 0.6; // Dynamic font size based on image size
+            ctx.font = `${isBold ? 'bold' : ''} ${isItalic ? 'italic' : ''} ${baseFontSize}px ${font}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
 
-        // Optional text shadow
-        if (textShadow) {
-            ctx.shadowColor = '#000';
-            ctx.shadowBlur = 5;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-        }
+            // Apply text shadow if enabled
+            if (shadow) {
+                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                ctx.shadowBlur = 2;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+            }
 
-        // Draw the text
-        ctx.fillText(text, width / 2, height / 2);
+            // Draw text in the center of the canvas
+            ctx.fillText(text, width / 2, height / 2);
 
-        return canvas;
-    }
+            // Convert canvas to image
+            const dataURL = canvas.toDataURL('image/png');
+            faviconData[size] = dataURL;
+        });
 
-    // Function to generate all the favicons
-    function generateFavicons() {
-        const text = faviconTextInput.value.trim();
-        const bgColor = bgColorInput.value;
-        const textColor = textColorInput.value;
-        const font = fontSelect.value;
-        const bold = boldTextCheckbox.checked;
-        const italic = italicTextCheckbox.checked;
-        const textShadow = textShadowCheckbox.checked;
-        const shape = iconShapeSelect.value;
-        const selectedSize = customSizeSelect.value === 'custom' ? customSizeInput.value : customSizeSelect.value;
+        updateHTMLCode(faviconData);
 
-        const sizes = selectedSize.split(',');
-        const generatedFiles = [];
-
-        // Generate the favicon(s)
-        sizes.forEach((sizeStr) => {
-            const size = sizeStr.trim();
-            const canvas = generateFaviconCanvas(text, bgColor, textColor, font, bold, italic, size, shape, textShadow);
-            const faviconDataUrl = canvas.toDataURL('image/png');
-
-            // Display preview
+        // Update preview area
+        iconPreviews.innerHTML = '';
+        sizes.forEach(size => {
             const img = document.createElement('img');
-            img.src = faviconDataUrl;
-            img.alt = `Preview of ${size}`;
+            img.src = faviconData[size];
+            img.alt = `Preview ${size}`;
             img.width = 50;
-            img.height = 50;
-            iconPreviewsContainer.appendChild(img);
-
-            // Add file for download
-            generatedFiles.push({ size, dataUrl: faviconDataUrl });
+            iconPreviews.appendChild(img);
         });
 
-        // Enable download of the favicons as a ZIP file
-        downloadZipLink.addEventListener('click', () => {
-            const zip = new JSZip();
-            generatedFiles.forEach((file) => {
-                const [width, height] = file.size.split('x');
-                zip.file(`favicon-${width}x${height}.png`, file.dataUrl.split(',')[1], { base64: true });
-            });
-            zip.generateAsync({ type: 'blob' }).then((blob) => {
-                saveAs(blob, 'favicons.zip');
-            });
-        });
-
-        // Show HTML code to link the favicon
-        const htmlCode = `
-        <link rel="icon" href="data:image/png;base64,${generatedFiles[0].dataUrl.split(',')[1]}" sizes="16x16" type="image/png">
-        <link rel="icon" href="data:image/png;base64,${generatedFiles[0].dataUrl.split(',')[1]}" sizes="32x32" type="image/png">
-        <link rel="icon" href="data:image/png;base64,${generatedFiles[0].dataUrl.split(',')[1]}" sizes="96x96" type="image/png">
-        <link rel="icon" href="data:image/png;base64,${generatedFiles[0].dataUrl.split(',')[1]}" sizes="180x180" type="image/png">
-        <link rel="icon" href="data:image/png;base64,${generatedFiles[0].dataUrl.split(',')[1]}" sizes="512x512" type="image/png">`;
-
-        htmlCodeTextarea.value = htmlCode;
+        // Enable download button and generate download link
         downloadLinksContainer.classList.remove('hidden');
+        downloadZipLink.addEventListener('click', function() {
+            const zip = new JSZip();
+            sizes.forEach(size => {
+                const imgData = faviconData[size];
+                zip.file(`${size}.png`, imgData.split(',')[1], {base64: true});
+            });
+
+            // Generate ZIP and allow the user to download it
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                saveAs(content, "favicons.zip");
+            });
+        });
     }
 
-    // Add event listener to generate favicon button
-    generateFaviconBtn.addEventListener('click', () => {
-        iconPreviewsContainer.innerHTML = ''; // Clear previous previews
-        downloadLinksContainer.classList.add('hidden');
-        generateFavicons();
+    // Add event listeners to inputs
+    [faviconText, textColor, bgColor, fontSelect, boldText, italicText, customSizeSelect, customSizeInput, textShadow, iconShapeSelect, backgroundMode].forEach(el => {
+        el.addEventListener('input', enableGenerateButton);
     });
 
-    // Initial setup
-    updateButtonsState();
+    // Initially disable button until inputs are valid
+    enableGenerateButton();
+
+    // Generate favicon when button is clicked
+    generateBtn.addEventListener('click', generateFavicon);
 });
