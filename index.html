@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text & Color Favicon Generator</title>
+
+ <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjRkZGZjk1NSI+PHBhdGggZD0iTTEwMC01NjB2LTMzMEg3MDB2MzIwSDMwMXYzMjA1MEgwMFpNNjgwLTQ4MHYtMzIwaDMyMHYzMjA1MEg1Njd2LTMyMkw2MDB6IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMCIgc3Ryb2tlLW1pbmQ9IjIuMCIgc3Ryb2tlLWRpc3RhbmNlPSJyb3VuZCIgc3Ryb2tlLW9wY2FsaXQ9IjAiLz48L3N2Zz4=">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Text & Color Favicon Generator by codesaif</h1>
+
+    <!-- Favicon Type Selection -->
+    <div class="input-option">
+        <label>Select Favicon Shape:</label>
+        <select id="iconShapeSelect">
+            <option value="square">Square</option>
+            <option value="circle">Circle</option>
+        </select>
+    </div>
+
+    <!-- Text Input Section -->
+    <div class="input-option">
+        <label>Enter Custom Text:</label>
+        <input type="text" id="faviconText" placeholder="Enter text (e.g., SA)">
+    </div>
+
+    <div class="input-option">
+        <label>Text Color:</label>
+        <input type="color" id="textColor" value="#ffffff">
+    </div>
+
+    <div class="input-option">
+        <label>Background Color:</label>
+        <input type="color" id="bgColor" value="#000000">
+    </div>
+
+    <!-- Font and Text Style -->
+    <div class="input-option">
+        <label for="fontSelect">Select Font:</label>
+        <select id="fontSelect">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Roboto">Roboto</option>
+        </select>
+    </div>
+
+    <div class="input-option">
+        <label>Text Style:</label>
+        <label><input type="checkbox" id="boldText"> Bold</label>
+        <label><input type="checkbox" id="italicText"> Italic</label>
+    </div>
+
+    <!-- Custom Size Section -->
+    <div class="input-option">
+        <label for="customSizeSelect">Select or Enter Custom Size:</label>
+        <select id="customSizeSelect">
+            <option value="16x16">16x16</option>
+            <option value="32x32">32x32</option>
+            <option value="96x96">96x96</option>
+            <option value="180x180">180x180</option>
+            <option value="512x512">512x512</option>
+            <option value="300x300">300x300</option>
+            <option value="custom">Custom Size</option>
+        </select>
+        <div id="customSizeInputSection" class="hidden">
+            <label for="customSize">Enter Custom Size (e.g., 64x64):</label>
+            <input type="text" id="customSize" placeholder="Enter size like 64x64">
+        </div>
+    </div>
+
+    <label for="textShadow">Text Shadow:</label>
+    <input type="checkbox" id="textShadow">
+  
+    <!-- Background Mode Selection -->
+    <div class="input-option">
+        <label>Preview Background Mode:</label>
+        <select id="backgroundMode">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+    </div>
+
+    <!-- Generate and Download Section -->
+    <button id="generateFaviconBtn" disabled>Generate Favicon</button>
+
+    <!-- HTML Code Generation -->
+    <h3>Generated HTML Code:</h3>
+    <textarea id="htmlCode" readonly></textarea>
+
+    <h3>Preview Icons:</h3>
+    <div id="iconPreviews"></div>
+
+    <!-- Save to Local Storage and Multiple Styles -->
+    <button id="saveToLocalBtn" disabled>Save to Local Storage</button>
+
+    <h3>Download Favicons:</h3>
+    <div id="downloadLinksContainer" class="hidden">
+        <a id="downloadZipLink" href="#" download="favicons.zip">Download All Icons</a>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
